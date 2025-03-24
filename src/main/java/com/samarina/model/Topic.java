@@ -29,8 +29,14 @@ public class Topic {
         return new ArrayList<>(votes.values());
     }
 
-    public boolean removeVote(String voteName) {
-        return votes.remove(voteName) != null;
+    // Удаляет голосование, если пользователь имеет право
+    public boolean removeVote(String voteName, User user) {
+        Vote vote = votes.get(voteName);
+        if (vote != null && vote.isCreator(user)) {
+            votes.remove(voteName);
+            return true;
+        }
+        return false;
     }
 
     public int getVotesCount() {
@@ -39,6 +45,6 @@ public class Topic {
 
     @Override
     public String toString() {
-        return name + " (голосований в разделе :" + getVotesCount() + ")";
+        return name + " (голосований в разделе =" + getVotesCount() + ")";
     }
 }

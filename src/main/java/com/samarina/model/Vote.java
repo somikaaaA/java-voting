@@ -11,13 +11,19 @@ import java.util.Map;
 public class Vote {
     private String name; // название
     private String description; // описание
+    private User creator; // создатель голосования
     private Map<String, Integer> options; //варианты ответов и кол-во голосов
-    private String creator; // создатель голосования
 
-    public Vote(String name, String description) {
+    public Vote(String name, String description, User creator) {
         this.name = name;
         this.description = description;
+        this.creator = creator;
         this.options = new HashMap<>();
+    }
+
+    // проверка на создателя
+    public boolean isCreator(User user) {
+        return creator.equals(user);
     }
 
     public void addOption(String option) {

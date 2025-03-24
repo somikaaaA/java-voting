@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="make methods for Topic">
+    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="make methods for Vote">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,14 +100,23 @@
       <option name="project" value="LOCAL" />
       <updated>1742839672967</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="make methods for Vote">
+      <option name="closed" value="true" />
+      <created>1742839836934</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1742839836934</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="create model - vote, topic" />
     <MESSAGE value="update model, add lombok" />
     <MESSAGE value="make methods for Topic" />
-    <option name="LAST_COMMIT_MESSAGE" value="make methods for Topic" />
+    <MESSAGE value="make methods for Vote" />
+    <option name="LAST_COMMIT_MESSAGE" value="make methods for Vote" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
