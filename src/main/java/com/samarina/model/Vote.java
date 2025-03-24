@@ -27,7 +27,7 @@ public class Vote {
     }
 
     public void addOption(String option) {
-        options.put(option, 0); // изначально количество голосов для варианта равно 0
+        options.put(option, 0);
     }
 
     public void voteForOption(String option) {
@@ -46,9 +46,8 @@ public class Vote {
         sb.append("Голосование: ").append(name).append("\n");
         sb.append("Описание: ").append(description).append("\n");
         sb.append("Варианты ответа:\n");
-        for (Map.Entry<String, Integer> entry : options.entrySet()) {
-            sb.append(" - ").append(entry.getKey()).append(": ").append(entry.getValue()).append(" votes\n");
-        }
+        options.forEach((key, value) ->
+                sb.append(" - ").append(key).append(": ").append(value).append(" votes\n"));
         return sb.toString();
     }
 }

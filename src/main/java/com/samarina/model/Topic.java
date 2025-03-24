@@ -29,7 +29,6 @@ public class Topic {
         return new ArrayList<>(votes.values());
     }
 
-    // Удаляет голосование, если пользователь имеет право
     public boolean removeVote(String voteName, User user) {
         Vote vote = votes.get(voteName);
         if (vote != null && vote.isCreator(user)) {

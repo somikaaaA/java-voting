@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="make methods for Vote">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/User.java" afterDir="false" />
+    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="create User. Update Vote and Topic">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerApp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -108,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742839836934</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="create User. Update Vote and Topic">
+      <option name="closed" value="true" />
+      <created>1742841326567</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1742841326568</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -116,7 +127,8 @@
     <MESSAGE value="update model, add lombok" />
     <MESSAGE value="make methods for Topic" />
     <MESSAGE value="make methods for Vote" />
-    <option name="LAST_COMMIT_MESSAGE" value="make methods for Vote" />
+    <MESSAGE value="create User. Update Vote and Topic" />
+    <option name="LAST_COMMIT_MESSAGE" value="create User. Update Vote and Topic" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
