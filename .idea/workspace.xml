@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" afterDir="false" />
+    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="create model - vote, topic">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,12 +36,22 @@
     &quot;assignee&quot;: &quot;somikaaaA&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:/somikaaaA/java-voting.git&quot;,
-    &quot;accountId&quot;: &quot;cd085c14-c287-43a6-a34f-ef3f7f641d8a&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:/somikaaaA/java-voting.git",
+    "accountId": "cd085c14-c287-43a6-a34f-ef3f7f641d8a"
+  },
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
+    },
+    "owner": "somikaaaA",
+    "repository": "java-voting"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -54,7 +64,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "#1 on develop",
     "kotlin-language-version-configured": "true",
     "onboarding.tips.debug.path": "D:/Anya/idea_projects/java-voting/src/main/java/com/samarina/Main.java"
   }
@@ -68,7 +78,20 @@
       <option name="presentableId" value="Default" />
       <updated>1742741502175</updated>
     </task>
+    <task id="LOCAL-00001" summary="create model - vote, topic">
+      <option name="closed" value="true" />
+      <created>1742836556622</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1742836556622</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="create model - vote, topic" />
+    <option name="LAST_COMMIT_MESSAGE" value="create model - vote, topic" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
