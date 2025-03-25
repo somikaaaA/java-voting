@@ -5,8 +5,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class ClientHandler extends SimpleChannelInboundHandler<String> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String msg){
-        System.out.println(msg);
+    protected void channelRead0(ChannelHandlerContext ctx, String message){
+        System.out.println(message);
     }
 
     @Override

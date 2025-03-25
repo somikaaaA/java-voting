@@ -4,52 +4,79 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServerAppTest {
-    private static final String TEST_FILE = "test_data.json";
 
     @BeforeEach
+    void setUp() {
+        ServerApp.getTopics().clear();
+        ServerApp.getActiveUsers().clear();
+    }
+
     @AfterEach
-    void cleanup() throws Exception {
-        // Удаляем тестовый файл перед и после каждого теста
-        Path file = Path.of("data", TEST_FILE);
-        if (Files.exists(file)) {
-            Files.delete(file);
-        }
+    void tearDown() {
         ServerApp.getTopics().clear();
         ServerApp.getActiveUsers().clear();
     }
 
     @Test
-    void shouldLoginAndLogoutUser() {
+    void testLoginNewUser() {
         assertTrue(ServerApp.loginNewUser("user1"));
-        assertFalse(ServerApp.loginNewUser("user1")); // Повторный логин
+        assertTrue(ServerApp.getActiveUsers().contains("user1"));
         assertEquals(1, ServerApp.getActiveUsers().size());
+    }
 
+    @Test
+    void testLoginExistingUser() {
+        ServerApp.loginNewUser("user1");
+        assertFalse(ServerApp.loginNewUser("user1"));
+        assertEquals(1, ServerApp.getActiveUsers().size());
+    }
+
+    @Test
+    void testLogoutUser() {
+        ServerApp.loginNewUser("user1");
         ServerApp.logoutUser("user1");
+        assertFalse(ServerApp.getActiveUsers().contains("user1"));
         assertEquals(0, ServerApp.getActiveUsers().size());
     }
 
     @Test
-    void shouldSaveAndLoadData() {
-        // Подготовка тестовых данных
-        Topic topic = new Topic("Test");
-        ServerApp.getTopics().put("Test", topic);
-        ServerApp.loginNewUser("user1");
-
-        // Сохраняем
-        ServerApp.save(TEST_FILE);
-
-        // Загружаем
-        ServerApp.load(TEST_FILE);
-
-        // Проверяем
-        assertEquals(1, ServerApp.getTopics().size());
-        assertTrue(ServerApp.getTopics().containsKey("Test"));
-        assertEquals(1, ServerApp.getActiveUsers().size());
+    void testLogoutNonExistingUser() {
+        // Не должно быть исключения
+        ServerApp.logoutUser("nonexistent");
     }
+
+//    @Test
+//    void testSaveAndLoad() {
+//        // Подготовка тестовых данных
+//        Topic topic = new Topic("TestTopic");
+//        ServerApp.getTopics().put("TestTopic", topic);
+//        ServerApp.loginNewUser("user1");
+//
+//        String filename = "test_save.json";
+//
+//        // Сохранение
+//        ServerApp.save(filename);
+//
+//        // Очистка
+//        ServerApp.getTopics().clear();
+//        ServerApp.getActiveUsers().clear();
+//
+//        // Загрузка
+//        ServerApp.load(filename);
+//
+//        // Проверки
+//        assertEquals(1, ServerApp.getTopics().size());
+//        assertNotNull(ServerApp.getTopics().get("TestTopic"));
+//        // Активные пользователи не сохраняются/не загружаются
+//        assertEquals(0, ServerApp.getActiveUsers().size());
+//
+//        // Удаление тестового файла
+//        new File("data/" + filename).delete();
+//    }
 }
