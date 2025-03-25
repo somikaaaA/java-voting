@@ -16,6 +16,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class ServerApp {
     private static final Logger logger = LoggerFactory.getLogger(ServerApp.class);
     private static final int PORT = 11111;
+    @Getter
     private static final Map<String, Topic> topics = new HashMap<>();
+    @Getter
     private static final Set<String> activeUsers = new HashSet<>();
 
     public static void main(String[] args) {
@@ -72,14 +75,6 @@ public class ServerApp {
     public static synchronized void logoutUser(String username) {
         logger.info("Активных пользователей: {}", activeUsers.size());
         activeUsers.remove(username);
-    }
-
-    public static Map<String, Topic> getTopics(){
-        return topics;
-    }
-
-    public static Set<String> getActiveUsers(){
-        return activeUsers;
     }
 
     public static void exit() {

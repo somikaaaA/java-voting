@@ -81,6 +81,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<String>{ // оп�
                     ctx.writeAndFlush("Сперва необходимо авторизоваться с помощью команды login -u=username, где username - имя вашего пользователя\n");
                 }
                 break;
+            case "help":
+                handleHelp(ctx);
+                break;
             case "exit":
                 handleExit(ctx, context);
                 break;
@@ -119,8 +122,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String>{ // оп�
                 }
                 break;
             default:
-                logger.warn("Пользователь ввел некорректную команду {}", msg);
-                ctx.writeAndFlush("Введена несуществующая команда\n");
+                ctx.writeAndFlush("Неизвестная команда. Введите 'help' для списка команд.\n");
         }
     }
 
@@ -469,6 +471,32 @@ public class ServerHandler extends SimpleChannelInboundHandler<String>{ // оп�
         });
     }
 
+    private void handleHelp(ChannelHandlerContext ctx) {
+        StringBuilder helpMessage = new StringBuilder();
+        helpMessage.append("Доступные команды:\n");
+        helpMessage.append("------------------\n");
+
+        // Команды для всех пользователей (до и после авторизации)
+        helpMessage.append("• login -u=<username> – подключиться к серверу с указанным именем пользователя\n");
+        helpMessage.append("• help – показать список доступных команд\n");
+        helpMessage.append("• exit – завершить работу\n");
+
+        // Команды, доступные только после авторизации
+        helpMessage.append("\nПосле авторизации доступны:\n");
+        helpMessage.append("• create topic -n=<topic> – создать новый раздел\n");
+        helpMessage.append("• create vote -t=<topic> – создать голосование в указанном разделе\n");
+        helpMessage.append("• view – показать список разделов\n");
+        helpMessage.append("• view -t=<topic> – показать голосования в разделе\n");
+        helpMessage.append("• view -t=<topic> -v=<vote> – показать детали голосования\n");
+        helpMessage.append("• vote -t=<topic> -v=<vote> – проголосовать\n");
+        helpMessage.append("• delete -t=<topic> -v=<vote> – удалить голосование (только создатель)\n");
+        helpMessage.append("\nСерверные команды:\n");
+        helpMessage.append("• save <filename> – сохранить данные в файл\n");
+        helpMessage.append("• load <filename> – загрузить данные из файла\n");
+
+        ctx.writeAndFlush(helpMessage.toString());
+    }
+
     @Override
     protected  void channelRead0(ChannelHandlerContext ctx, String msg){
         ClientContext context = clientContexts.computeIfAbsent(ctx, key -> new ClientContext()); // получаем состояние, если оно уже есть, или записываем, если еще нет
@@ -516,4 +544,3 @@ public class ServerHandler extends SimpleChannelInboundHandler<String>{ // оп�
         }
     }
 }
-

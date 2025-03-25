@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="create client">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientApp.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" afterDir="false" />
+    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="all">
       <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerHandler.java" afterDir="false" />
     </list>
@@ -73,6 +64,7 @@
     "Application.ClientApp.executor": "Run",
     "Application.ServerApp.executor": "Run",
     "Application.user1.executor": "Run",
+    "Application.user2.executor": "Run",
     "JUnit.ServerHandlerTests.executor": "Run",
     "JUnit.TopicTests.executor": "Run",
     "JUnit.VoteTests.executor": "Run",
@@ -237,7 +229,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742850415717</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="all">
+      <option name="closed" value="true" />
+      <created>1742915018387</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1742915018387</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -259,17 +259,7 @@
     <MESSAGE value="create User. Update Vote and Topic" />
     <MESSAGE value="create server" />
     <MESSAGE value="create client" />
-    <option name="LAST_COMMIT_MESSAGE" value="create client" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/samarina/Main.java</url>
-          <line>13</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="all" />
+    <option name="LAST_COMMIT_MESSAGE" value="all" />
   </component>
 </project>

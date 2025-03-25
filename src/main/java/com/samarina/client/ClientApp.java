@@ -30,7 +30,8 @@ public class ClientApp {
 
             ChannelFuture future = bootstrap.connect("localhost", 11111).sync(); // настраиваем подключение к серверу
             Channel channel = future.channel();
-            System.out.println("Клиент подключен к серверу");
+            System.out.println("Подключение успешно");
+            System.out.println("Для просмотра команд введите help");
 
             Scanner scanner = new Scanner(System.in);
             while(true){
