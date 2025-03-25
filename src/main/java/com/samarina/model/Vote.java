@@ -1,53 +1,39 @@
 package com.samarina.model;
 
 import lombok.Getter;
-import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@Getter
-@Setter
 public class Vote {
-    private String name; // название
-    private String description; // описание
-    private User creator; // создатель голосования
-    private Map<String, Integer> options; //варианты ответов и кол-во голосов
+    @Getter
+    private String name;
+    @Getter
+    private String description;
+    @Getter
+    private String creator;
+    private Map<String, List<String>> options;
 
-    public Vote(String name, String description, User creator) {
+    public Vote(String name, String description, Map<String, List<String>> options, String creator) {
         this.name = name;
         this.description = description;
+        this.options = new HashMap<>(options);
         this.creator = creator;
-        this.options = new HashMap<>();
     }
 
-    // проверка на создателя
-    public boolean isCreator(User user) {
-        return creator.equals(user);
-    }
-
-    public void addOption(String option) {
-        options.put(option, 0);
-    }
-
-    public void voteForOption(String option) {
-        if (options.containsKey(option)) {
-            options.put(option, options.get(option) + 1);
+    public void vote(String option, String voter){    // добавляем пользователя в список проголосовавших
+        if (options == null) {
+            options = new HashMap<>();
         }
+        options.computeIfAbsent(option, k -> new ArrayList<>()).add(voter);
     }
 
-    public boolean removeOption(String option) {
-        return options.remove(option) != null;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Голосование: ").append(name).append("\n");
-        sb.append("Описание: ").append(description).append("\n");
-        sb.append("Варианты ответа:\n");
-        options.forEach((key, value) ->
-                sb.append(" - ").append(key).append(": ").append(value).append(" votes\n"));
-        return sb.toString();
+    public Map<String, List<String>> getOptions(){
+        if(options == null){
+            options = new HashMap<>();
+        }
+        return options;
     }
 }

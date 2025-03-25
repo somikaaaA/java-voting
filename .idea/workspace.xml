@@ -4,8 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="create server">
+    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="create client">
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientApp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,22 +43,22 @@
     &quot;assignee&quot;: &quot;somikaaaA&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:/somikaaaA/java-voting.git",
-    "accountId": "cd085c14-c287-43a6-a34f-ef3f7f641d8a"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:/somikaaaA/java-voting.git&quot;,
+    &quot;accountId&quot;: &quot;cd085c14-c287-43a6-a34f-ef3f7f641d8a&quot;
   },
-  "recentNewPullRequestHead": {
-    "server": {
-      "useHttp": false,
-      "host": "github.com",
-      "port": null,
-      "suffix": null
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
     },
-    "owner": "somikaaaA",
-    "repository": "java-voting"
+    &quot;owner&quot;: &quot;somikaaaA&quot;,
+    &quot;repository&quot;: &quot;java-voting&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -60,12 +70,108 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.ClientApp.executor": "Run",
+    "Application.ServerApp.executor": "Run",
+    "Application.user1.executor": "Run",
+    "JUnit.ServerHandlerTests.executor": "Run",
+    "JUnit.TopicTests.executor": "Run",
+    "JUnit.VoteTests.executor": "Run",
+    "JUnit.model in java-voting.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "#1 on develop",
     "kotlin-language-version-configured": "true",
     "onboarding.tips.debug.path": "D:/Anya/idea_projects/java-voting/src/main/java/com/samarina/Main.java"
   }
 }]]></component>
+  <component name="RunManager" selected="Application.user2">
+    <configuration name="ServerApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.samarina.server.ServerApp" />
+      <module name="java-voting" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.samarina.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="user1" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.samarina.client.ClientApp" />
+      <module name="java-voting" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="user2" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.samarina.client.ClientApp" />
+      <module name="java-voting" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServerHandlerTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-voting" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ServerHandlerTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TopicTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-voting" />
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.TopicTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="VoteTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-voting" />
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="MAIN_CLASS_NAME" value="model.VoteTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="model in java-voting" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-voting" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="model" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.user1" />
+      <item itemvalue="Application.user2" />
+      <item itemvalue="Application.ServerApp" />
+      <item itemvalue="JUnit.ServerHandlerTests" />
+      <item itemvalue="JUnit.TopicTests" />
+      <item itemvalue="JUnit.VoteTests" />
+      <item itemvalue="JUnit.model in java-voting" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ServerApp" />
+        <item itemvalue="JUnit.ServerHandlerTests" />
+        <item itemvalue="JUnit.model in java-voting" />
+        <item itemvalue="JUnit.VoteTests" />
+        <item itemvalue="JUnit.TopicTests" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -123,8 +229,27 @@
       <option name="project" value="LOCAL" />
       <updated>1742850051451</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="create client">
+      <option name="closed" value="true" />
+      <created>1742850415717</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1742850415717</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="create model - vote, topic" />
@@ -133,7 +258,8 @@
     <MESSAGE value="make methods for Vote" />
     <MESSAGE value="create User. Update Vote and Topic" />
     <MESSAGE value="create server" />
-    <option name="LAST_COMMIT_MESSAGE" value="create server" />
+    <MESSAGE value="create client" />
+    <option name="LAST_COMMIT_MESSAGE" value="create client" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
