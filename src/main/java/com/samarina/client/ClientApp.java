@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 public class ClientApp {
     public static void main(String[] args) {
-        EventLoopGroup group = new NioEventLoopGroup(); // поток для передачи данных
+        EventLoopGroup group = new NioEventLoopGroup();
 
         try {
             Bootstrap bootstrap = new Bootstrap();
@@ -28,7 +28,7 @@ public class ClientApp {
                         }
                     });
 
-            ChannelFuture future = bootstrap.connect("localhost", 11111).sync(); // настраиваем подключение к серверу
+            ChannelFuture future = bootstrap.connect("localhost", 8080).sync();
             Channel channel = future.channel();
             System.out.println("Подключение успешно");
             System.out.println("Для просмотра команд введите help");
@@ -40,7 +40,7 @@ public class ClientApp {
             }
 
         }catch (InterruptedException e) {
-            throw new RuntimeException("Соединение было разорвано");
+            throw new RuntimeException("Соединение разорвано");
         }finally {
             group.shutdownGracefully();
         }

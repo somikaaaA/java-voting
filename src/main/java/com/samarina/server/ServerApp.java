@@ -2,10 +2,11 @@ package com.samarina.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.util.*;
 import java.io.File;
+import java.util.*;
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.samarina.model.Topic;
 import com.samarina.model.Vote;
 import io.netty.bootstrap.ServerBootstrap;
@@ -21,70 +22,88 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ServerApp {
     private static final Logger logger = LoggerFactory.getLogger(ServerApp.class);
-    private static final int PORT = 11111;
+    private static final int PORT = 8080;
     @Getter
     private static final Map<String, Topic> topics = new HashMap<>();
     @Getter
     private static final Set<String> activeUsers = new HashSet<>();
 
     public static void main(String[] args) {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(); // поток для обработки подключений
-        EventLoopGroup workerGroup = new NioEventLoopGroup(); // поток для обработки данных
+        //файл для записи логов
+        new File("logs").mkdirs();
+        //обработка подключений
+        EventLoopGroup connectGroup = new NioEventLoopGroup();
+
+        //обработка данных
+        EventLoopGroup dataGroup = new NioEventLoopGroup();
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.group(bossGroup, workerGroup) // указываем принимающий родительский поток сервера и дочерний поток клиента
-                    .channel(NioServerSocketChannel.class)// указываем тип канала для принятия новых TCP/IP подключений
-                    .childHandler(new ChannelInitializer<SocketChannel>() { // создаем новое подключение для каждого клиент-соединения
+            //принимающий родительский и дочерний потоки сервера и клиента
+            bootstrap.group(connectGroup, dataGroup)
+                    //тип канала для TCP/IP подключений
+                    .channel(NioServerSocketChannel.class)
+                    //новое подключение для каждого клиента
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch){
-                            ch.pipeline().addLast( new StringDecoder(), new StringEncoder(), new ServerHandler()); // добавляем в очередь по порядку: раскодирование входящих строк, кодирование исходящих, наш обработчик
+                            ch.pipeline().addLast(
+                                    new StringDecoder(), //раскодировка входящих строк
+                                    new StringEncoder(), //кодировка исходящих
+                                    new ServerHandler());
                             logger.info("Новое подключение: {}", ch.remoteAddress());
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 128) // макс. количество подключений
-                    .childOption(ChannelOption.SO_KEEPALIVE, true); // поддержка соединения
+                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
 
+            //запуск сервера
             ChannelFuture future = bootstrap.bind(PORT).sync();
             logger.info("Сервер запущен на порту {}", PORT);
-            System.out.println("Порт " + PORT + " запущен");
-            future.channel().closeFuture().sync(); // ожидание завершения работы канала
+            System.out.println("Сервер запущен на порту " + PORT);
+
+            //ожидание завершения работы сервера
+            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("Сервер был прерван: {}", e.getMessage(), e);
+            logger.error("Прерывание работы сервера: {}", e.getMessage(), e);
             throw new RuntimeException("Соединение было разорвано");
-        } finally { // закрываем потоки, дождавшись обработки всех сообщений
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
-            logger.info("Работа сервера была остановлена");
+        } finally {
+            dataGroup.shutdownGracefully();
+            connectGroup.shutdownGracefully();
+            logger.info("Сервер остановлен");
         }
     }
 
-    public static synchronized boolean loginUser(String username) {
-        if (activeUsers.contains(username)) {
+    //регистрация нового пользователя
+    public static synchronized boolean loginNewUser(String name) {
+        if (activeUsers.contains(name)) {
             return false;
         }
-        activeUsers.add(username);
+        activeUsers.add(name);
+        logger.info("Пользователь {} зарегистрирован", name);
         logger.info("Активных пользователей: {}", activeUsers.size());
         return true;
     }
 
-    public static synchronized void logoutUser(String username) {
+    //выход пользователя из системы
+    public static synchronized void logoutUser(String name) {
+        logger.info("Пользователь {} вышел из системы", name);
         logger.info("Активных пользователей: {}", activeUsers.size());
-        activeUsers.remove(username);
+        activeUsers.remove(name);
     }
 
     public static void exit() {
-        logger.info("Завершение работы сервера...");
+        logger.info("Завершение работы сервера");
         System.exit(0);
     }
 
+    //сохранение данных в файл
     public static synchronized void save(String filename){
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT); // форматирование json
+        mapper.enable(SerializationFeature.INDENT_OUTPUT); //форматирование json
 
         try{
             File dataDirectory = new File("data");
@@ -98,12 +117,13 @@ public class ServerApp {
             data.put("topics", getTopics().values()); // помещаем все разделы
 
             mapper.writeValue(file, data);
-            logger.info("Данные были успешно сохранены в файл {}", filename);
+            logger.info("Данные сохранены в {}", filename);
         }catch (IOException e){
-            logger.error("Ошибка при попытке сохранения данных в файл {}: {}", filename, e.getMessage(), e);
+            logger.error("Ошибка при попытке сохранения данных: {}", e.getMessage(), e);
         }
     }
 
+    //загрузка из файла
     public static synchronized void load(String filename){
         ObjectMapper mapper = new ObjectMapper();
 
@@ -121,7 +141,7 @@ public class ServerApp {
             }
 
             Map<String, Object> data = mapper.readValue(file, new TypeReference<Map<String, Object>>() {});
-            topics.clear(); // очищаем данные после передачи объектов Object
+            topics.clear();//очистка данных после передачи обьектов
 
             List<Map<String, Object>> topicsData = (List<Map<String, Object>>) data.get("topics");
             for(Map<String, Object> topicData : topicsData){
@@ -138,11 +158,11 @@ public class ServerApp {
                     String creator = (String) voteData.get("creator");
 
                     Vote vote = new Vote(voteName, description, options, creator);
-                    topic.addVote(vote); // помещаем объекты Vote
+                    topic.addVote(vote);
                 }
             }
         }catch (IOException e){
-            logger.error("Ошибка при попытке загрузки данных из файла {}: {}", filename, e.getMessage(), e);
+            logger.error("Ошибка при попытке загрузки данных из файла: {}", e.getMessage(), e);
         }
     }
 }

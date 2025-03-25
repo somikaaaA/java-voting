@@ -23,14 +23,11 @@ public class Vote {
         this.creator = creator;
     }
 
-    public void vote(String option, String voter){    // добавляем пользователя в список проголосовавших
-        if (options == null) {
-            options = new HashMap<>();
-        }
+    public synchronized void addVote(String option, String voter) {
         options.computeIfAbsent(option, k -> new ArrayList<>()).add(voter);
     }
 
-    public Map<String, List<String>> getOptions(){
+    public Map<String, List<String>> getOptions() {
         if(options == null){
             options = new HashMap<>();
         }
