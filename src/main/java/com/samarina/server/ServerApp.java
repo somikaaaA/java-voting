@@ -2,11 +2,10 @@ package com.samarina.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.io.File;
 import java.util.*;
+import java.io.File;
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.samarina.model.Topic;
 import com.samarina.model.Vote;
 import io.netty.bootstrap.ServerBootstrap;
@@ -22,9 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ServerApp {
-    private static final Logger logger = LoggerFactory.getLogger(ServerApp.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerApp.class);
     private static final int PORT = 8080;
     @Getter
     private static final Map<String, Topic> topics = new HashMap<>();
@@ -32,122 +32,108 @@ public class ServerApp {
     private static final Set<String> activeUsers = new HashSet<>();
 
     public static void main(String[] args) {
-        //файл для записи логов
-        new File("logs").mkdirs();
         //обработка подключений
-        EventLoopGroup connectGroup = new NioEventLoopGroup();
+        EventLoopGroup connectionGroup = new NioEventLoopGroup();
 
-        //обработка данных
+        // обработка входящих данных
         EventLoopGroup dataGroup = new NioEventLoopGroup();
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
-            //принимающий родительский и дочерний потоки сервера и клиента
-            bootstrap.group(connectGroup, dataGroup)
-                    //тип канала для TCP/IP подключений
+            bootstrap.group(connectionGroup, dataGroup)
                     .channel(NioServerSocketChannel.class)
-                    //новое подключение для каждого клиента
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch){
                             ch.pipeline().addLast(
-                                    new StringDecoder(), //раскодировка входящих строк
-                                    new StringEncoder(), //кодировка исходящих
+                                    new StringDecoder(),
+                                    new StringEncoder(),
                                     new ServerHandler());
-                            logger.info("Новое подключение: {}", ch.remoteAddress());
+                            log.info("Новое подключение: {}", ch.remoteAddress());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            //запуск сервера
             ChannelFuture future = bootstrap.bind(PORT).sync();
-            logger.info("Сервер запущен на порту {}", PORT);
-            System.out.println("Сервер запущен на порту " + PORT);
-
-            //ожидание завершения работы сервера
+            log.info("Сервер запущен на порту {}", PORT);
+            System.out.println("Сервер запущен на порту " +  PORT);
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("Прерывание работы сервера: {}", e.getMessage(), e);
-            throw new RuntimeException("Соединение было разорвано");
+            log.error("Сервер был прерван: {}", e.getMessage(), e);
+            throw new RuntimeException("Соединение разорвано");
         } finally {
             dataGroup.shutdownGracefully();
-            connectGroup.shutdownGracefully();
-            logger.info("Сервер остановлен");
+            connectionGroup.shutdownGracefully();
+            log.info("Сервер остановлен");
         }
     }
 
-    //регистрация нового пользователя
-    public static synchronized boolean loginNewUser(String name) {
-        if (activeUsers.contains(name)) {
+    public static synchronized boolean loginUser(String username) {
+        if (activeUsers.contains(username)) {
             return false;
         }
-        activeUsers.add(name);
-        logger.info("Пользователь {} зарегистрирован", name);
-        logger.info("Активных пользователей: {}", activeUsers.size());
+        activeUsers.add(username);
+        log.info("Активных пользователей: {}", activeUsers.size());
         return true;
     }
 
-    //выход пользователя из системы
-    public static synchronized void logoutUser(String name) {
-        logger.info("Пользователь {} вышел из системы", name);
-        logger.info("Активных пользователей: {}", activeUsers.size());
-        activeUsers.remove(name);
+    public static synchronized void logoutUser(String username) {
+        log.info("Активных пользователей: {}", activeUsers.size());
+        activeUsers.remove(username);
     }
 
     public static void exit() {
-        logger.info("Завершение работы сервера");
+        log.info("Завершение работы сервера");
         System.exit(0);
     }
 
-    //сохранение данных в файл
     public static synchronized void save(String filename){
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT); //форматирование json
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         try{
             File dataDirectory = new File("data");
             if (!dataDirectory.exists()){
                 dataDirectory.mkdir();
-                logger.info("Создана папка data");
+                log.info("Создана папка data");
             }
             File file = new File(dataDirectory, filename);
 
-            Map<String, Object> data = new HashMap<>(); // где храним все объекты
-            data.put("topics", getTopics().values()); // помещаем все разделы
+            Map<String, Object> data = new HashMap<>();
+            data.put("topics", getTopics().values());
 
             mapper.writeValue(file, data);
-            logger.info("Данные сохранены в {}", filename);
+            log.info("Данные сохранены в файл {}", filename);
         }catch (IOException e){
-            logger.error("Ошибка при попытке сохранения данных: {}", e.getMessage(), e);
+            log.error("При попытке сохранения данных произошла ошибка: {}", e.getMessage(), e);
         }
     }
 
-    //загрузка из файла
     public static synchronized void load(String filename){
         ObjectMapper mapper = new ObjectMapper();
 
         try{
             File dataDir = new File("data");
             if (!dataDir.exists()) {
-                logger.error("Папка data не найдена");
+                log.error("Папка data не найдена");
                 throw new RuntimeException("Папка data не найдена");
             }
 
             File file = new File(dataDir, filename);
             if(!file.exists()){
-                logger.error("Файл {} не найден", filename);
+                log.error("Файл {} не найден", filename);
                 throw new RuntimeException("Файл " + filename + " не найден");
             }
 
             Map<String, Object> data = mapper.readValue(file, new TypeReference<Map<String, Object>>() {});
-            topics.clear();//очистка данных после передачи обьектов
+            topics.clear();
 
             List<Map<String, Object>> topicsData = (List<Map<String, Object>>) data.get("topics");
             for(Map<String, Object> topicData : topicsData){
                 String topicName = (String) topicData.get("name");
                 Topic topic = new Topic(topicName);
-                topics.put(topicName, topic); // помещаем объекты Topic
+                topics.put(topicName, topic);
 
                 Map<String, Object> votesData = (Map<String, Object>) topicData.get("allVotes");
                 for(Map.Entry<String, Object> voteEntry : votesData.entrySet()){
@@ -162,7 +148,7 @@ public class ServerApp {
                 }
             }
         }catch (IOException e){
-            logger.error("Ошибка при попытке загрузки данных из файла: {}", e.getMessage(), e);
+            log.error("При попытке загрузки данных произошла ошибка: {}",e.getMessage(), e);
         }
     }
 }

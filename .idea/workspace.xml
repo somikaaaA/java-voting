@@ -4,12 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="add logging in file">
+    <list default="true" id="3e6f4328-40e8-41b8-94a4-3c9c7b5c8d9d" name="Changes" comment="test">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/State.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/client/ClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Topic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/model/Vote.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/samarina/server/ServerHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/ServerAppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ServerAppTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ServerHandlerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ServerHandlerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ServerHandlerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/model/TopicTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/model/TopicTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/model/VoteTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/model/VoteTest.java" afterDir="false" />
     </list>
@@ -21,6 +26,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -55,6 +61,9 @@
     &quot;repository&quot;: &quot;java-voting&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -66,14 +75,25 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.Client.executor": "Run",
     "Application.ClientApp.executor": "Run",
+    "Application.Server.executor": "Run",
     "Application.ServerApp.executor": "Run",
     "Application.user1.executor": "Run",
     "Application.user2.executor": "Run",
+    "JUnit.ServerAppAppHandlerTest.executor": "Run",
+    "JUnit.ServerAppAppHandlerTest.testHandleCreateTopic.executor": "Run",
+    "JUnit.ServerAppAppHandlerTest.testHandleDeleteVote.executor": "Run",
+    "JUnit.ServerAppAppTest.executor": "Run",
+    "JUnit.ServerAppHandlerTest.executor": "Run",
+    "JUnit.ServerAppHandlerTest.testHandleVote.executor": "Run",
     "JUnit.ServerAppTest.executor": "Run",
     "JUnit.ServerAppTest.shouldSaveAndLoadData.executor": "Debug",
     "JUnit.ServerAppTest.testSaveAndLoad.executor": "Run",
     "JUnit.ServerHandlerTest.executor": "Run",
+    "JUnit.ServerHandlerTest.testCreateTopicWithoutLogin.executor": "Run",
+    "JUnit.ServerHandlerTest.testLoginWithEmptyUsername.executor": "Run",
+    "JUnit.ServerHandlerTest.testLoginWithoutUsername.executor": "Run",
     "JUnit.ServerHandlerTests.executor": "Run",
     "JUnit.TopicTest.executor": "Run",
     "JUnit.TopicTests.executor": "Run",
@@ -85,15 +105,32 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "#1 on develop",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Anya/idea_projects/java-voting/src/test/java",
     "onboarding.tips.debug.path": "D:/Anya/idea_projects/java-voting/src/main/java/com/samarina/Main.java"
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Anya\idea_projects\java-voting\src\test\java" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.ServerHandlerTest">
+  <component name="RunManager" selected="JUnit.java in java-voting">
+    <configuration name="ServerApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.samarina.server.ServerApp" />
+      <module name="java-voting" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.samarina.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="user1" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.samarina.client.ClientApp" />
       <module name="java-voting" />
@@ -104,15 +141,6 @@
     <configuration name="user2" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.samarina.client.ClientApp" />
       <module name="java-voting" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ServerAppTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="java-voting" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="ServerAppTest" />
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -136,32 +164,28 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TopicTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ServerHandlerTest.testCreateTopicWithoutLogin" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="java-voting" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="model.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.TopicTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ServerHandlerTest" />
+      <option name="METHOD_NAME" value="testCreateTopicWithoutLogin" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="VoteTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="java in java-voting" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="java-voting" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="model.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="model" />
-      <option name="MAIN_CLASS_NAME" value="model.VoteTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="model in java-voting" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-voting" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java/model" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -169,19 +193,19 @@
     <list>
       <item itemvalue="Application.user1" />
       <item itemvalue="Application.user2" />
-      <item itemvalue="JUnit.ServerAppTest" />
+      <item itemvalue="JUnit.ServerHandlerTest.testCreateTopicWithoutLogin" />
+      <item itemvalue="JUnit.model in java-voting" />
+      <item itemvalue="JUnit.java in java-voting" />
       <item itemvalue="JUnit.ServerAppTest.testSaveAndLoad" />
       <item itemvalue="JUnit.ServerHandlerTest" />
-      <item itemvalue="JUnit.TopicTest" />
-      <item itemvalue="JUnit.VoteTest" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.ServerHandlerTest" />
+        <item itemvalue="JUnit.java in java-voting" />
+        <item itemvalue="JUnit.model in java-voting" />
         <item itemvalue="JUnit.ServerAppTest.testSaveAndLoad" />
-        <item itemvalue="JUnit.ServerAppTest" />
-        <item itemvalue="JUnit.TopicTest" />
-        <item itemvalue="JUnit.VoteTest" />
+        <item itemvalue="JUnit.ServerHandlerTest" />
+        <item itemvalue="JUnit.ServerHandlerTest.testCreateTopicWithoutLogin" />
       </list>
     </recent_temporary>
   </component>
@@ -274,7 +298,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742936341879</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="test">
+      <option name="closed" value="true" />
+      <created>1742939649588</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1742939649588</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -299,6 +331,7 @@
     <MESSAGE value="all" />
     <MESSAGE value="add command &quot;help&quot;" />
     <MESSAGE value="add logging in file" />
-    <option name="LAST_COMMIT_MESSAGE" value="add logging in file" />
+    <MESSAGE value="test" />
+    <option name="LAST_COMMIT_MESSAGE" value="test" />
   </component>
 </project>

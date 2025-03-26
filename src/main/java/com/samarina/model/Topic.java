@@ -5,8 +5,8 @@ import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
 public class Topic {
+    @Getter
     private String name;
     private Map<String, Vote> votes;
 
@@ -19,23 +19,15 @@ public class Topic {
         return votes.get(voteName);
     }
 
-    public synchronized void addVote(Vote vote) {
+    public Map<String, Vote> getAllVotes() {
+        return votes;
+    }
+
+    public void addVote(Vote vote) {
         votes.put(vote.getName(), vote);
     }
 
-    public synchronized void deleteVote(String voteName) {
+    public void deleteVote(String voteName) {
         votes.remove(voteName);
-    }
-
-    public Map<String, Map<String, Object>> getVotesData() {
-        Map<String, Map<String, Object>> votesData = new HashMap<>();
-        votes.forEach((name, vote) -> {
-            Map<String, Object> voteData = new HashMap<>();
-            voteData.put("Описание", vote.getDescription());
-            voteData.put("Создатель", vote.getCreator());
-            voteData.put("Варианты ответов", vote.getOptions());
-            votesData.put(name, voteData);
-        });
-        return votesData;
     }
 }

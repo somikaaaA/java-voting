@@ -1,17 +1,13 @@
 package com.samarina.client;
 
+import java.util.Scanner;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
-
-import java.util.Scanner;
 
 public class ClientApp {
     public static void main(String[] args) {
@@ -30,8 +26,7 @@ public class ClientApp {
 
             ChannelFuture future = bootstrap.connect("localhost", 8080).sync();
             Channel channel = future.channel();
-            System.out.println("Подключение успешно");
-            System.out.println("Для просмотра команд введите help");
+            System.out.println("Подключен новый пользователь");
 
             Scanner scanner = new Scanner(System.in);
             while(true){
@@ -39,9 +34,9 @@ public class ClientApp {
                 channel.writeAndFlush(prompt);
             }
 
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException("Соединение разорвано");
-        }finally {
+        } finally {
             group.shutdownGracefully();
         }
     }

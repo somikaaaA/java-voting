@@ -11,236 +11,249 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public class ServerHandler extends SimpleChannelInboundHandler<String> {
-    private static final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerHandler.class);
 
-    private enum state {
-        MENU,
-        WAITING_FOR_NAME,
-        WAITING_FOR_DESC,
-        WAITING_FOR_QUANTITY,
-        WAITING_FOR_OPTIONS,
-        WAITING_FOR_VOTE
-    }
-
-    private static class ClientContext {
-        private String username;
-        state currentState = state.MENU;
-        boolean isLogged = false;
+    //класс для хранения состояния для каждого клиента
+    private static class CurrentContext {
+        private String name;
+        State state = State.MENU;
+        boolean isLogin = false;
         String currentTopic;
         String voteName;
         String voteDescription;
-        int optionsQuantity;
+        int numOfOptions;
         Map<String, List<String>> voteOptions = new HashMap<>();
         List<String> currentOptions = new ArrayList<>();
     }
 
-    private final Map<ChannelHandlerContext, ClientContext> clientContexts = new HashMap<>();
+    //хранение состояний клиентов
+    private final Map<ChannelHandlerContext, CurrentContext> currentClientCtx = new HashMap<>();
 
-    private void handleCommand(ChannelHandlerContext channelHandlerContext, String message, ClientContext clientContext){
-        String[] messageParts = message.split(" ");
+    private void handleCommand(ChannelHandlerContext ctx, String msg, CurrentContext context){
+        String[] splitMessage = msg.split(" ");
+        String command = splitMessage[0];
 
-        //переменная для первой команды
-        String command = messageParts[0];
-
-        switch (command.toLowerCase()){
+        switch (command){
             case "login":
-                if(clientContext.isLogged){
-                    logger.warn("Обнаружен повторный запрос авторизации от {}", clientContext.username);
-                    channelHandlerContext.writeAndFlush("Это имя пользователя уже занято. Выберите другое\n");
+                if(context.isLogin){
+                    log.warn("Повторная авторизация. Пользователь {}", context.name);
+                    ctx.writeAndFlush("Вы уже авторизованы\n");
                     return;
                 }
-                handleLogin(channelHandlerContext, messageParts, clientContext);
+                handleLogin(ctx, splitMessage, context);
                 break;
             case "create":
-                if(clientContext.isLogged) {
-                    handleCreate(channelHandlerContext, messageParts, clientContext);
+                if(context.isLogin) {
+                    handleCreate(ctx, splitMessage, context);
                 }else{
-                    logger.warn("Неавторизованная попытка создания от {}", channelHandlerContext.channel().remoteAddress());
-                    channelHandlerContext.writeAndFlush("Требуется авторизация. Введите login -u=ваше_имя\n");
+                    log.warn("Попытка выполнения команды create неавторизованным пользователем");
+                    ctx.writeAndFlush("Для выполнения команды create необходимо авторизоваться\n Для авторизации выполните команду login");
                 }
                 break;
             case "view":
-                if(clientContext.isLogged) {
-                    handleView(channelHandlerContext, messageParts);
+                if(context.isLogin) {
+                    handleView(ctx, splitMessage);
                 }else{
-                    logger.warn("Попытка просмотра без авторизации от {}", channelHandlerContext.channel().remoteAddress());
-                    channelHandlerContext.writeAndFlush("Доступ запрещен. Сначала авторизуйтесь\n");
+                    log.warn("Попытка выполнения команды view неавторизованным пользователем");
+                    ctx.writeAndFlush("Для выполнения команды view необходимо авторизоваться\n Для авторизации выполните команду login");
                 }
                 break;
             case "vote":
-                if(clientContext.isLogged) {
-                    handleVote(channelHandlerContext, messageParts, clientContext);
+                if(context.isLogin) {
+                    handleVote(ctx, splitMessage, context);
                 }else{
-                    logger.warn("Попытка голосования без авторизации от {}", channelHandlerContext.channel().remoteAddress());
-                    channelHandlerContext.writeAndFlush("Голосовать могут только зарегистрированные пользователи\n");
+                    log.warn("Попытка выполнения команды vote неавторизованным пользователем");
+                    ctx.writeAndFlush("Для выполнения команды vote необходимо авторизоваться\n Для авторизации выполните команду login");
                 }
                 break;
             case "delete":
-                if(clientContext.isLogged) {
-                    handleDelete(channelHandlerContext, messageParts, clientContext);
+                if(context.isLogin) {
+                    handleDelete(ctx, splitMessage, context);
                 }else{
-                    logger.warn("Попытка удаления без авторизации от {}", channelHandlerContext.channel().remoteAddress());
-                    channelHandlerContext.writeAndFlush("Удаление доступно после входа в систему\n");
+                    log.warn("Попытка выполнения команды delete неавторизованным пользователем");
+                    ctx.writeAndFlush("Для выполнения команды delete необходимо авторизоваться\n Для авторизации выполните команду login");
                 }
                 break;
             case "help":
-                handleHelp(channelHandlerContext);
+                handleHelp(ctx);
                 break;
             case "exit":
-                handleExit(channelHandlerContext, clientContext);
+                handleExit(ctx, context);
                 break;
             case "save":
-                if (messageParts.length > 1){
-                    String filename = messageParts[1];
-                    if(!filename.endsWith(".json")){
+                if (splitMessage.length > 1){
+                    String filename = splitMessage[1];
+                    if(!filename.endsWith(".json")) {
                         filename += ".json";
                     }
                     ServerApp.save(filename);
-                    logger.warn("Сохранение данных в {}", filename);
-                    channelHandlerContext.writeAndFlush("Данные сохранены в " + filename + "\n");
+                    log.warn("Данные сохранены в файл {}", filename);
+                    ctx.writeAndFlush("Данные успешно сохранены в файл " + filename + "\n");
                 }else{
-                    logger.warn("Пропущено имя файла для сохранения");
-                    channelHandlerContext.writeAndFlush("Укажите название файла для сохранения\n");
+                    log.warn("При попытке сохранения данных не указано название файла");
+                    ctx.writeAndFlush("Укажите название файла сохранения данных\n");
                 }
                 break;
             case "load":
-                if (messageParts.length>1){
-                    String filename = messageParts[1];
-                    if(!filename.endsWith(".json")){
+                if (splitMessage.length>1){
+                    String filename = splitMessage[1];
+                    if(!filename.endsWith(".json")) {
                         filename += ".json";
                     }
 
                     try {
                         ServerApp.load(filename);
-                        logger.warn("Загрузка данных из {}", filename);
-                        channelHandlerContext.writeAndFlush("Данные восстановлены из " + filename + "\n");
+                        log.warn("Данные загружены из файла {}", filename);
+                        ctx.writeAndFlush("Данные успешно загружены из файла " + filename + "\n");
                     }catch (RuntimeException e){
-                        logger.error("Ошибка загрузки: {}", e.getMessage(), e);
-                        channelHandlerContext.writeAndFlush("Не удалось загрузить данные\n");
+                        log.error("Возникла ошибка при попытке загрузки из файла: {}", e.getMessage(), e);
+                        ctx.writeAndFlush("Ошибка загрузки из файла\n");
                     }
                 }else{
-                    logger.warn("Не указано имя файла для загрузки");
-                    channelHandlerContext.writeAndFlush("Укажите файл для загрузки\n");
+                    log.warn("При попытке загрузки данных не указано название файла");
+                    ctx.writeAndFlush("Укажите название существующего файла для загрузки данных\n");
                 }
                 break;
             default:
-                channelHandlerContext.writeAndFlush("Неизвестная команда. Введите 'help' для вывода списка команд.\n");
+                log.warn("Пользователь ввел некорректную команду {}", msg);
+                ctx.writeAndFlush("Неизвестная команда. Введите 'help' для вывода списка команд\n");
         }
     }
 
-    private void handleLogin(ChannelHandlerContext ctx, String[] messageParts, ClientContext context){
+    private void handleHelp(ChannelHandlerContext ctx) {
+        String helpMessage = "Доступные команды:\n" +
+                "------------------\n" +
+                "• login -u=<username> – подключиться к серверу с указанным именем пользователя\n" +
+                "• help – показать список доступных команд\n" +
+                "• exit – завершить работу\n" +
+                "\nПосле авторизации доступны:\n" +
+                "• create topic -n=<topic> – создать новый раздел\n" +
+                "• create vote -t=<topic> – создать голосование в указанном разделе\n" +
+                "• view – показать список разделов\n" +
+                "• view -t=<topic> – показать голосования в разделе\n" +
+                "• view -t=<topic> -v=<vote> – показать детали голосования\n" +
+                "• vote -t=<topic> -v=<vote> – проголосовать\n" +
+                "• delete -t=<topic> -v=<vote> – удалить голосование (только создатель)\n" +
+                "\nСерверные команды:\n" +
+                "• save <filename> – сохранить данные в файл\n" +
+                "• load <filename> – загрузить данные из файла\n";
+
+        ctx.writeAndFlush(helpMessage);
+    }
+
+    private void handleLogin(ChannelHandlerContext ctx, String[] messageParts, CurrentContext context) {
         if(messageParts.length > 1 && messageParts[1].split("=")[0].equals("-u")){
             if(messageParts[1].split("=").length == 2) {
                 String username = messageParts[1].split("=")[1];
-                if(!ServerApp.loginNewUser(username)){
-                    logger.warn("Повторная регистрация: {}", username);
+                if(!ServerApp.loginUser(username)) {
+                    log.warn("Повторная регистрация: {}", username);
                     ctx.writeAndFlush("Имя " + username + " уже используется\n");
                     return;
                 }
-                context.isLogged = true;
-                context.username = username;
-                logger.info("Новый участник: {}", username);
-                ctx.writeAndFlush("Добро пожаловать, " + username + "!\n");
+                context.isLogin = true;
+                context.name = username;
+                log.info("Пользователь {} подключен", username);
+                ctx.writeAndFlush("Вы вошли в систему. Login: " + username + "\n");
             }else{
-                logger.warn("Некорректный формат имени: {}", Arrays.toString(messageParts));
-                ctx.writeAndFlush("Ошибка: неправильный формат имени\n");
+                log.warn("Ошибка ввода имени пользователя: {}", Arrays.toString(messageParts));
+                ctx.writeAndFlush("Ошибка ввода имени пользователя username\n");
             }
         }else{
-            logger.warn("Ошибка в команде login: {}", Arrays.toString(messageParts));
-            ctx.writeAndFlush("Используйте: login -u=ваше_имя\n");
+            log.warn("Неправильно введена команда login: {}", Arrays.toString(messageParts));
+            ctx.writeAndFlush("Неправильно введена команда login -u=username\n");
         }
     }
 
-    private void handleCreate(ChannelHandlerContext ctx, String[] messageParts, ClientContext context){
+    private void handleCreate(ChannelHandlerContext ctx, String[] messageParts, CurrentContext context) {
         if (messageParts.length > 1 && messageParts[1].equalsIgnoreCase("topic")) {
             String topicName = messageParts[2].split("=")[1];
             synchronized (ServerApp.getTopics()) {
                 if (!ServerApp.getTopics().containsKey(topicName)) {
                     ServerApp.getTopics().put(topicName, new Topic(topicName));
 
-                    logger.info("Создан раздел {} участником {}", topicName, context.username);
-                    ctx.writeAndFlush("Новый раздел создан: " + topicName + "\n");
+                    log.info("Создан раздел: {}. Пользователь: {}", topicName, context.name);
+                    ctx.writeAndFlush("Создан новый раздел " + topicName + "\n");
                 } else {
-                    logger.warn("Дубликат раздела: {}", topicName);
-                    ctx.writeAndFlush("Раздел с таким названием уже есть");
+                    log.warn("Попытка повторного создания раздела: {}", topicName);
+                    ctx.writeAndFlush("Раздел с таким именем уже существует");
                 }
             }
-        }else if(messageParts.length > 1 && messageParts[1].equalsIgnoreCase("vote")){
+        }else if(messageParts.length > 1 && messageParts[1].equalsIgnoreCase("vote")) {
             if(messageParts.length > 2 && messageParts[2].split("=")[0].equals("-t")){
                 String topicName = messageParts[2].split("=")[1];
                 synchronized (ServerApp.getTopics()) {
                     if (ServerApp.getTopics().containsKey(topicName)) {
                         context.currentTopic = topicName;
-                        context.currentState = state.WAITING_FOR_NAME;
-                        ctx.writeAndFlush("Создаем голосование в разделе " + topicName + "\nУкажите название:");
+                        context.state = State.WAITING_FOR_NAME;
+                        ctx.writeAndFlush("Создание голосования в разделе " + topicName + "\n Введите название голосования:");
                     } else {
-                        logger.warn("Отсутствует раздел {} при создании от {}", topicName, context.username);
-                        ctx.writeAndFlush("Такого раздела не существует\n");
+                        log.warn("Раздел для создания голосования {} не найден. Пользователь: {}", topicName, context.name);
+                        ctx.writeAndFlush("Такого  раздела не существует\n");
                     }
                 }
             }else {
-                logger.warn("Ошибка параметров create от {}", context.username);
-                ctx.writeAndFlush("Формат: create vote -t=название_раздела\n");
+                log.warn("Введены некорректные параметры. Команда create. Пользователь: {}", context.name);
+                ctx.writeAndFlush("Команда введена некорректно. Попробуйте еще раз\n");
             }
         }else{
-            logger.warn("Некорректный create от {}", context.username);
-            ctx.writeAndFlush("Для создания раздела: create topic -n=название\nДля голосования: create vote -t=раздел\n");
+            log.warn("Некорректный ввод команды create. Пользователь: {}", context.name);
+            ctx.writeAndFlush("Для создания темы укажите ключевое слово topic\nДля создания голосования укажите ключевое слово vote и параметр темы -t=topic\n");
         }
     }
 
-    private void handleVoteCreation(ChannelHandlerContext ctx, String msg, ClientContext context) {
+    private void handleVoteCreation(ChannelHandlerContext ctx, String msg, CurrentContext context) {
         synchronized (ServerApp.getTopics()) {
-            switch (context.currentState) {
+            switch (context.state) {
                 case WAITING_FOR_NAME:
-                    if(ServerApp.getTopics().get(context.currentTopic).getVotes().containsKey(msg)){
-                        logger.warn("Дубликат голосования {} от {}", msg, context.username);
-                        ctx.writeAndFlush("Голосование с таким названием уже есть");
+                    if(ServerApp.getTopics().get(context.currentTopic).getAllVotes().containsKey(msg)) {
+                        log.warn("Попытка повторного создания голосования. Пользователь {}", context.name);
+                        ctx.writeAndFlush("Голосование с таким названием уже существует");
                         return;
                     }
                     context.voteName = msg;
-                    context.currentState = state.WAITING_FOR_DESC;
-                    ctx.writeAndFlush("Опишите суть голосования\n");
+                    context.state = State.WAITING_FOR_DESC;
+                    ctx.writeAndFlush("Введите описание к голосованию\n");
                     break;
                 case WAITING_FOR_DESC:
                     context.voteDescription = msg;
-                    context.currentState = state.WAITING_FOR_QUANTITY;
-                    ctx.writeAndFlush("Сколько будет вариантов ответа?\n");
+                    context.state = State.WAITING_FOR_QUANTITY;
+                    ctx.writeAndFlush("Введите количество возможных ответов\n");
                     break;
                 case WAITING_FOR_QUANTITY:
                     try {
                         if (Integer.parseInt(msg) > 0) {
-                            context.optionsQuantity = Integer.parseInt(msg);
-                            context.currentState = state.WAITING_FOR_OPTIONS;
-                            ctx.writeAndFlush("Введите первый вариант\n");
+                            context.numOfOptions = Integer.parseInt(msg);
+                            context.state = State.WAITING_FOR_OPTIONS;
+                            ctx.writeAndFlush("Введите вариант ответа 1\n");
                         } else {
-                            logger.warn("Недопустимое число вариантов {} от {}", msg, context.username);
-                            ctx.writeAndFlush("Нужен хотя бы один вариант\n");
+                            log.warn("Попытка создания голосования без ответов {}", context.name);
+                            ctx.writeAndFlush("Должен быть хотя бы один вариант ответа\n");
                         }
                     } catch (NumberFormatException e) {
-                        logger.warn("Нечисловой ввод вариантов от {}", context.username);
-                        ctx.writeAndFlush("Введите число\n");
+                        log.warn("Ошибка ввода: {}. Пользователь {}", msg, context.name);
+                        ctx.writeAndFlush("Ошибка ввода. Введите число возможных ответов\n");
                     }
                     break;
                 case WAITING_FOR_OPTIONS:
                     if (!context.voteOptions.containsKey(msg.toLowerCase())) {
                         context.voteOptions.put(msg, new ArrayList<>());
                     } else {
-                        logger.warn("Дубликат варианта {} от {}", msg, context.username);
-                        ctx.writeAndFlush("Такой вариант уже есть\nВведите вариант " + (context.voteOptions.size() + 1) + "\n");
+                        log.warn("Попытка повторного создания варианта ответа: {} Пользователь: {}", msg, context.name);
+                        ctx.writeAndFlush("Такой вариант ответа уже существует\nВведите другой вариант ответа " + (context.voteOptions.size() + 1) + "\n");
                     }
-                    if (context.voteOptions.size() < context.optionsQuantity) {
-                        ctx.writeAndFlush("Введите вариант " + (context.voteOptions.size() + 1) + "\n");
+                    if (context.voteOptions.size() < context.numOfOptions) {
+                        ctx.writeAndFlush("Введите вариант ответа " + (context.voteOptions.size() + 1) + "\n");
                     } else {
                         Topic topic = ServerApp.getTopics().get(context.currentTopic);
-                        topic.addVote(new Vote(context.voteName, context.voteDescription, context.voteOptions, context.username));
-                        logger.info("Добавлено голосование {} в раздел {} от {}", context.voteName, context.currentTopic, context.username);
-                        ctx.writeAndFlush("Голосование создано успешно\n");
+                        topic.addVote(new Vote(context.voteName, context.voteDescription, context.voteOptions, context.name));
+                        log.info("Пользователь {} создал голосование {} в разделе {}", context.name, context.voteName, context.currentTopic);
+                        ctx.writeAndFlush("Новый раздел голосования успешно создан\n");
 
-                        context.currentState = state.MENU;
+                        context.state = State.MENU;
                         context.voteName = null;
                         context.currentTopic = null;
                         context.voteDescription = null;
-                        context.optionsQuantity = 0;
+                        context.numOfOptions = 0;
                         if (context.voteOptions != null) {
                             context.voteOptions.clear();
                         }
@@ -253,11 +266,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
         }
     }
 
-    private void handleView(ChannelHandlerContext ctx, String[] messageParts){
+    private void handleView(ChannelHandlerContext ctx, String[] messageParts) {
         String topicName = null;
         String voteName = null;
 
-        for(String part : messageParts){
+        for(String part : messageParts){ // записываем входные параметры
             if(part.startsWith("-t=") && part.split("=").length == 2){
                 topicName = part.split("=")[1];
             }else if(part.startsWith("-v=") && part.split("=").length == 2){
@@ -267,7 +280,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
         synchronized (ServerApp.getTopics()) {
             if (topicName != null && !ServerApp.getTopics().containsKey(topicName)) {
-                logger.warn("Запрос несуществующего раздела {} от {}", topicName, clientContexts.get(ctx).username);
+                log.warn("Не удалось найти раздел {} во время выполнения команды view пользователем {}", topicName, currentClientCtx.get(ctx).name);
+                log.warn("Раздел {} не найден. Команды view. Пользователь {}", topicName, currentClientCtx.get(ctx).name);
                 ctx.writeAndFlush("Раздел " + topicName + " не найден\n");
                 return;
             }
@@ -276,38 +290,38 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
             if (topicName == null && voteName == null) {
                 if (ServerApp.getTopics().isEmpty()) {
-                    serverResponse.append("Нет созданных разделов\n");
+                    serverResponse.append("Не создано ни одного раздела\n");
                 } else {
-                    logger.info("Запрос списка разделов от {}", clientContexts.get(ctx).username);
-                    serverResponse.append("Доступные разделы:\n");
+                    log.info("Запрос всех разделов. Пользователь {}", currentClientCtx.get(ctx).name);
+                    serverResponse.append("Текущий список разделов:\n");
                     for (Map.Entry<String, Topic> topicEntry : ServerApp.getTopics().entrySet()) {
-                        serverResponse.append(topicEntry.getKey()).append(" (голосований: ").append(topicEntry.getValue().getVotes().size()).append(")\n");
+                        serverResponse.append(topicEntry.getKey()).append(" (голосований в разделе: ").append(topicEntry.getValue().getAllVotes().size()).append(")\n");
                     }
                 }
             } else if (topicName != null && voteName == null) {
                 Topic topic = ServerApp.getTopics().get(topicName);
-                logger.info("Запрос голосований в {} от {}", topicName, clientContexts.get(ctx).username);
-                serverResponse.append("Голосования в ").append(topicName).append(":\n");
-                for (Map.Entry<String, Vote> voteEntry : topic.getVotes().entrySet()) {
+                log.info("Запрос всех голосований в разделе {}. Пользователь {}", topicName, currentClientCtx.get(ctx).name);
+                serverResponse.append("Голосования в разделе: ").append(topicName).append(":\n");
+                for (Map.Entry<String, Vote> voteEntry : topic.getAllVotes().entrySet()) {
                     serverResponse.append("- ").append(voteEntry.getKey()).append("\n");
                 }
             } else if (topicName != null && voteName != null) {
                 Topic topic = ServerApp.getTopics().get(topicName);
                 Vote vote = topic.getVote(voteName);
                 if (vote == null) {
-                    logger.warn("Запрос несуществующего голосования {} в {} от {}", voteName, topicName, clientContexts.get(ctx).username);
-                    ctx.writeAndFlush("Голосование " + voteName + " не найдено\n");
+                    log.warn("Голосование {} в разделе {} не найдено. Команда view. Пользователь: {}", voteName, topicName, currentClientCtx.get(ctx).name);
+                    ctx.writeAndFlush("Голосование " + voteName + " не найдено в разделе " + topicName + "\n");
                     return;
                 }
-                logger.info("Запрос деталей {} в {} от {}", voteName, topicName, clientContexts.get(ctx).username);
-                serverResponse.append("Голосование: ").append(voteName).append("\n");
-                serverResponse.append("Описание: ").append(vote.getDescription()).append("\nВарианты:\n");
+                log.info("Запрос информации о голосовании {} в разделе {}. Пользователь: {}",voteName, topicName, currentClientCtx.get(ctx).name);
+                serverResponse.append("Голосование ").append(voteName).append(":\n");
+                serverResponse.append("Тема голосования: ").append(vote.getDescription()).append("\n").append("Варианты ответа:\n");
                 for (Map.Entry<String, List<String>> optionEntry : vote.getOptions().entrySet()) {
-                    serverResponse.append("- ").append(optionEntry.getKey()).append(" (голосов: ").append(optionEntry.getValue().size()).append(")\n");
+                    serverResponse.append("- ").append(optionEntry.getKey()).append(". Проголосовавших пользователей: ").append(optionEntry.getValue().size()).append("\n");
                 }
             } else {
-                logger.warn("Ошибка параметров view от {}", clientContexts.get(ctx).username);
-                ctx.writeAndFlush("Используйте:\n view\n view -t=раздел\n view -t=раздел -v=голосование\n");
+                log.warn("Ввод некорректных параметров. Пользователь: {}", currentClientCtx.get(ctx).name);
+                ctx.writeAndFlush("Неверно введена команда view\n");
                 return;
             }
 
@@ -315,7 +329,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
         }
     }
 
-    private void handleVote(ChannelHandlerContext ctx, String[] messageParts, ClientContext context){
+    private void handleVote(ChannelHandlerContext ctx, String[] messageParts, CurrentContext context) {
         String topicName = null;
         String voteName = null;
 
@@ -328,22 +342,22 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
         }
 
         if (topicName == null) {
-            logger.warn("Пропущен раздел в vote от {}", context.username);
-            ctx.writeAndFlush("Укажите раздел параметром -t=название\n");
+            log.warn("Ввод некорректных параметров. Команда vote. Пользователь: {}", context.name);
+            ctx.writeAndFlush("Не указано имя раздела\n");
             return;
         }
         synchronized (ServerApp.getTopics()) {
             if (!ServerApp.getTopics().containsKey(topicName)) {
-                logger.warn("Попытка голосования в несуществующем разделе {} от {}", topicName, context.username);
-                ctx.writeAndFlush("Раздел " + topicName + " не существует\n");
+                log.warn("Раздел {} не найден. Команда vote. Пользователь: {}", topicName, context.name);
+                ctx.writeAndFlush("Раздел " + topicName + " не найден\n");
                 return;
             }
 
-            Map<String, Vote> votes = ServerApp.getTopics().get(topicName).getVotes();
+            Map<String, Vote> votes = ServerApp.getTopics().get(topicName).getAllVotes();
 
             if (voteName == null) {
-                logger.warn("Пропущено голосование в vote от {}", context.username);
-                ctx.writeAndFlush("Укажите голосование параметром -v=название\n");
+                log.warn("Некорректный параметр -v. Команда vote. Пользователь: {}", context.name);
+                ctx.writeAndFlush("Не указано имя голосования\n");
                 return;
             }
 
@@ -352,16 +366,16 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
                 List<String> optionKeys = new ArrayList<>(voteOptions.keySet());
 
                 boolean hasVoted = voteOptions.values().stream()
-                        .anyMatch(userList -> userList.contains(context.username));
+                        .anyMatch(userList -> userList.contains(context.name));
 
                 if (hasVoted) {
-                    logger.warn("Повторное голосование {} в {} от {}", voteName, topicName, context.username);
-                    ctx.writeAndFlush("Вы уже участвовали в этом голосовании.\n");
+                    log.warn("Попытка повторного голосования {} в разделе {}. Пользователь {}", voteName, topicName, context.name);
+                    ctx.writeAndFlush("Вы уже голосовали в этом голосовании.\n");
                     return;
                 }
 
-                StringBuilder serverResponse = new StringBuilder("Голосование: ").append(voteName).append("\nТема: ").append(votes.get(voteName).getDescription()).append("\n");
-                serverResponse.append("Выберите вариант (введите номер):\n");
+                StringBuilder serverResponse = new StringBuilder("Вы перешли к голосованию ").append(voteName).append(". Голосование:\n").append(votes.get(voteName).getDescription()).append("\n");
+                serverResponse.append("Чтобы проголосовать, введите цифру варианта ответа\n");
 
                 for (int i = 0; i < optionKeys.size(); i++) {
                     serverResponse.append(i + 1).append(". ").append(optionKeys.get(i)).append("\n");
@@ -369,24 +383,25 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
                 ctx.writeAndFlush(serverResponse.toString());
 
-                context.currentState = state.WAITING_FOR_VOTE;
+                context.state = State.WAITING_FOR_VOTE;
                 context.voteName = voteName;
                 context.currentTopic = topicName;
                 context.currentOptions = optionKeys;
             } else {
-                logger.warn("Попытка голосования в несуществующем {} в {} от {}", voteName, topicName, context.username);
-                ctx.writeAndFlush("Голосование " + voteName + " не найдено\n");
+                log.warn("Не удалось найти голосование {} в разделе {} во время выполнения команды vote пользователем {}", voteName, topicName, context.name);
+                log.warn("Голосование {} в разделе {} не найдено. Команда vote. Пользователь {}", voteName, topicName, context.name);
+                ctx.writeAndFlush("Голосование " + voteName + " не найдено в разделе " + topicName + "\n");
                 return;
             }
         }
     }
 
-    private void handleVoteChoice(ChannelHandlerContext ctx, String msg, ClientContext context){
+    private void handleVoteChoice(ChannelHandlerContext ctx, String msg, CurrentContext context) {
         try {
             int choice = Integer.parseInt(msg);
 
-            if(choice < 0 || choice > context.currentOptions.size()){
-                logger.warn("Некорректный выбор {} в vote от {}", msg, context.username);
+            if(choice < 0 || choice > context.currentOptions.size()) {
+                log.warn("Ввод некорректного числа {}. Команда vote. Пользователь: {}", msg, context.name);
                 ctx.writeAndFlush("Введите число от 1 до " + context.currentOptions.size() + "\n");
                 return;
             }
@@ -395,27 +410,27 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
                 String chosenOption = context.currentOptions.get(choice - 1);
                 Topic topic = ServerApp.getTopics().get(context.currentTopic);
                 Vote vote = topic.getVote(context.voteName);
-                vote.addVote(chosenOption, context.username);
+                vote.vote(chosenOption, context.name);
 
-                logger.info("Голос {} в {} от {}", chosenOption, context.voteName, context.username);
-                ctx.writeAndFlush("Ваш выбор: " + chosenOption + " учтен\n");
+                log.info("Пользователь {} проголосовал в голосовании {} раздела {}", context.name, context.voteName, context.currentTopic);
+                ctx.writeAndFlush("Ваш голос засчитан в голосовании\n");
             }
 
-            context.currentState = state.MENU;
+            context.state = State.MENU;
             context.voteName = null;
             context.currentTopic = null;
             context.currentOptions = null;
         } catch (NumberFormatException e) {
-            logger.warn("Ошибка ввода номера от {}", context.username);
-            ctx.writeAndFlush("Введите номер варианта\n");
+            log.warn("Ошибка ввода. Команда vote. Пользователь: {}", context.name);
+            ctx.writeAndFlush("Ошибка ввода. Введите одно из доступных чисел\n");
         }
     }
 
-    private void handleDelete(ChannelHandlerContext ctx, String[] messageParts, ClientContext context){
+    private void handleDelete(ChannelHandlerContext ctx, String[] messageParts, CurrentContext context) {
         String topicName = null;
         String voteName = null;
 
-        for(String part : messageParts){
+        for(String part : messageParts) {
             if(part.startsWith("-t=") && part.split("=").length == 2){
                 topicName = part.split("=")[1];
             }else if(part.startsWith("-v=") && part.split("=").length == 2){
@@ -424,85 +439,62 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
         }
 
         if (topicName == null) {
-            logger.warn("Пропущен раздел в delete от {}", context.username);
-            ctx.writeAndFlush("Укажите раздел параметром -t=название\n");
+            log.warn("Не указано название раздела. Команда delete. Пользователь: {}", context.name);
+            ctx.writeAndFlush("Не указано название раздела\n");
             return;
         }
 
         synchronized (ServerApp.getTopics()) {
             if (!ServerApp.getTopics().containsKey(topicName)) {
-                logger.warn("Попытка удаления в несуществующем разделе {} от {}", topicName, context.username);
+                log.warn("Раздел {} не найден. Команда delete. Пользователь: {}", topicName, context.name);
                 ctx.writeAndFlush("Раздел " + topicName + " не найден\n");
                 return;
             }
 
-            Map<String, Vote> votes = ServerApp.getTopics().get(topicName).getVotes();
+            Map<String, Vote> votes = ServerApp.getTopics().get(topicName).getAllVotes();
 
             if (voteName == null) {
-                logger.warn("Пропущено голосование в delete от {}", context.username);
-                ctx.writeAndFlush("Укажите голосование параметром -v=название\n");
+                log.warn("Не указано название голосования. Команда delete. Пользователь: {}", context.name);
+                ctx.writeAndFlush("Не указано название голосования.\n");
                 return;
             }
             if (votes.containsKey(voteName)) {
-                if (context.username.equals(votes.get(voteName).getCreator())) {
+                if (context.name.equals(votes.get(voteName).getCreator())) {
                     ServerApp.getTopics().get(topicName).deleteVote(voteName);
-                    logger.info("Удаление {} в {} от {}", voteName, topicName, context.username);
-                    ctx.writeAndFlush("Голосование " + voteName + " удалено\n");
+                    log.info("Удалено голосование {} из раздела {}. Пользователь {}", voteName, topicName, context.name);
+                    ctx.writeAndFlush("Голосование " + voteName + " удалено из раздела" + "\n");
                 } else {
-                    logger.warn("Попытка удаления чужого голосования {} от {}", voteName, context.username);
-                    ctx.writeAndFlush("Можно удалять только свои голосования");
+                    log.warn("Ошибка прав доступа. Команда delete. Пользователь: {}", context.name);
+                    ctx.writeAndFlush("Ошибка доступа. Вы не можете удалить это голосование");
                     return;
                 }
             } else {
-                logger.warn("Попытка удаления несуществующего {} в {} от {}", voteName, topicName, context.username);
-                ctx.writeAndFlush("Голосование " + voteName + " не найдено\n");
+                log.warn("Голосование {} в разделе {} не найдено. Команда delete. Пользователь: {}", voteName, topicName, context.name);
+                ctx.writeAndFlush("Голосования " + voteName + " не существует в разделе " + topicName + "\n");
                 return;
             }
         }
     }
 
-    private void handleExit(ChannelHandlerContext ctx, ClientContext context){
-        ctx.writeAndFlush("До свидания!\n").addListener(future -> {
-            if (context.isLogged) {
-                ServerApp.logoutUser(context.username);
-                logger.info("Отключение участника {}", context.username);
-                System.out.println("Участник " + context.username + " вышел");
+    private void handleExit(ChannelHandlerContext ctx, CurrentContext context){
+        ctx.writeAndFlush("Завершение работы\n").addListener(future -> {
+            if (context.isLogin) {
+                ServerApp.logoutUser(context.name);
+                log.info("Клиент {} (пользователь {}) отключен", ctx.channel().remoteAddress(), context.name);
+                System.out.println("Пользователь " + context.name + " отключен");
             }
-            clientContexts.remove(ctx);
+            currentClientCtx.remove(ctx);
             ctx.close();
         });
     }
 
-    private void handleHelp(ChannelHandlerContext ctx) {
-        StringBuilder helpMessage = new StringBuilder();
-        helpMessage.append("Доступные команды:\n");
-        helpMessage.append("------------------\n");
-
-        helpMessage.append("• login -u=<username> – подключиться к серверу с указанным именем пользователя\n");
-        helpMessage.append("• help – показать список доступных команд\n");
-        helpMessage.append("• exit – завершить работу\n");
-
-        helpMessage.append("\nПосле авторизации доступны:\n");
-        helpMessage.append("• create topic -n=<topic> – создать новый раздел\n");
-        helpMessage.append("• create vote -t=<topic> – создать голосование в указанном разделе\n");
-        helpMessage.append("• view – показать список разделов\n");
-        helpMessage.append("• view -t=<topic> – показать голосования в разделе\n");
-        helpMessage.append("• view -t=<topic> -v=<vote> – показать детали голосования\n");
-        helpMessage.append("• vote -t=<topic> -v=<vote> – проголосовать\n");
-        helpMessage.append("• delete -t=<topic> -v=<vote> – удалить голосование (только создатель)\n");
-
-        helpMessage.append("\nСерверные команды:\n");
-        helpMessage.append("• save <filename> – сохранить данные в файл\n");
-        helpMessage.append("• load <filename> – загрузить данные из файла\n");
-
-        ctx.writeAndFlush(helpMessage.toString());
-    }
-
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, String msg){
-        ClientContext context = clientContexts.computeIfAbsent(ctx, key -> new ClientContext()); // получаем состояние, если оно уже есть, или записываем, если еще нет
+    protected  void channelRead0(ChannelHandlerContext ctx, String msg){
+        //получение/создание контекста для текущего клиента
+        CurrentContext context = currentClientCtx.computeIfAbsent(ctx, key -> new CurrentContext());
 
-        switch(context.currentState){
+        //обработка сообщения в зависимости от состояния
+        switch(context.state){
             case MENU:
                 handleCommand(ctx, msg, context);
                 break;
@@ -515,33 +507,36 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
         }
     }
 
+    //обработка нового подключения
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        logger.info("Подключение: {}", ctx.channel().remoteAddress());
-        System.out.println("Новое подключение: " + ctx.channel().remoteAddress());
+        log.info("Клиент {} подключен", ctx.channel().remoteAddress());
+        System.out.println("Клиент подключен: " + ctx.channel().remoteAddress());
     }
 
+    //обработка отключения клиента
     @Override
     public void channelInactive(ChannelHandlerContext ctx){
-        ClientContext context = clientContexts.get(ctx);
+        CurrentContext context = currentClientCtx.get(ctx);
 
-        if(context != null && context.isLogged){
-            ServerApp.logoutUser(context.username);
-            logger.info("Отключение: {} ({})", ctx.channel().remoteAddress(), context.username);
-            System.out.println(context.username + " отключился");
+        if(context != null && context.isLogin){
+            ServerApp.logoutUser(context.name);
+            log.info("Клиент {} (пользователь {}) отключен", ctx.channel().remoteAddress(), context.name);
+            System.out.println("Соединение с пользователем " + context.name + " разорвано");
         }
 
-        clientContexts.remove(ctx);
+        currentClientCtx.remove(ctx);
         ctx.close();
     }
 
+    //обработка ошибок
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
-        ClientContext context = clientContexts.get(ctx);
-        if (context != null && context.isLogged) {
-            logger.error("Сбой у {}: {}", context.username, cause.getMessage(), cause);
+        CurrentContext context = currentClientCtx.get(ctx);
+        if (context != null && context.isLogin) {
+            log.error("Ошибка у пользователя {}: {}", context.name, cause.getMessage(), cause);
         } else {
-            logger.error("Ошибка соединения: {}", cause.getMessage(), cause);
+            log.error("Ошибка: {}", cause.getMessage(), cause);
         }
     }
 }
