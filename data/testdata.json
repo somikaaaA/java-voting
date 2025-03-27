@@ -1,0 +1,17 @@
+{
+  "topics" : [ {
+    "name" : "testTopic",
+    "allVotes" : {
+      "testVote" : {
+        "name" : "testVote",
+        "description" : "testQuestion",
+        "creator" : "user",
+        "options" : {
+          "answer3" : [ ],
+          "answer2" : [ ],
+          "answer1" : [ ]
+        }
+      }
+    }
+  } ]
+}

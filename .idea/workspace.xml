@@ -73,42 +73,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Client.executor": "Run",
-    "Application.ClientApp.executor": "Run",
-    "Application.Server.executor": "Run",
-    "Application.ServerApp.executor": "Run",
-    "Application.user1.executor": "Run",
-    "Application.user2.executor": "Run",
-    "JUnit.ServerAppAppHandlerTest.executor": "Run",
-    "JUnit.ServerAppAppHandlerTest.testHandleCreateTopic.executor": "Run",
-    "JUnit.ServerAppAppHandlerTest.testHandleDeleteVote.executor": "Run",
-    "JUnit.ServerAppAppTest.executor": "Run",
-    "JUnit.ServerAppHandlerTest.executor": "Run",
-    "JUnit.ServerAppHandlerTest.testHandleVote.executor": "Run",
-    "JUnit.ServerAppTest.executor": "Run",
-    "JUnit.ServerAppTest.shouldSaveAndLoadData.executor": "Debug",
-    "JUnit.ServerAppTest.testSaveAndLoad.executor": "Run",
-    "JUnit.ServerHandlerTest.executor": "Run",
-    "JUnit.ServerHandlerTest.testCreateTopicWithoutLogin.executor": "Run",
-    "JUnit.ServerHandlerTest.testLoginWithEmptyUsername.executor": "Run",
-    "JUnit.ServerHandlerTest.testLoginWithoutUsername.executor": "Run",
-    "JUnit.ServerHandlerTests.executor": "Run",
-    "JUnit.TopicTest.executor": "Run",
-    "JUnit.TopicTests.executor": "Run",
-    "JUnit.VoteTest.executor": "Run",
-    "JUnit.VoteTests.executor": "Run",
-    "JUnit.java in java-voting.executor": "Run",
-    "JUnit.model in java-voting.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "#1 on develop",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Anya/idea_projects/java-voting/src/test/java",
-    "onboarding.tips.debug.path": "D:/Anya/idea_projects/java-voting/src/main/java/com/samarina/Main.java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Client.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ClientApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Server.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ServerApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.user1.executor&quot;: &quot;Run&quot;,
+    &quot;Application.user2.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppAppHandlerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppAppHandlerTest.testHandleCreateTopic.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppAppHandlerTest.testHandleDeleteVote.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppAppTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppHandlerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppHandlerTest.testHandleVote.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerAppTest.shouldSaveAndLoadData.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.ServerAppTest.testSaveAndLoad.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerHandlerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerHandlerTest.testCreateTopicWithoutLogin.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerHandlerTest.testLoginWithEmptyUsername.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerHandlerTest.testLoginWithoutUsername.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerHandlerTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TopicTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TopicTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.VoteTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.VoteTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.java in java-voting.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.model in java-voting.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#1 on develop&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Anya/idea_projects/java-voting/src/test/java&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;D:/Anya/idea_projects/java-voting/src/main/java/com/samarina/Main.java&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Anya\idea_projects\java-voting\src\test\java" />
@@ -193,6 +193,7 @@
     <list>
       <item itemvalue="Application.user1" />
       <item itemvalue="Application.user2" />
+      <item itemvalue="Application.ServerApp" />
       <item itemvalue="JUnit.ServerHandlerTest.testCreateTopicWithoutLogin" />
       <item itemvalue="JUnit.model in java-voting" />
       <item itemvalue="JUnit.java in java-voting" />
